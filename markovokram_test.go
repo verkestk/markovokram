@@ -169,24 +169,3 @@ func Test_Generation_Next(t *testing.T) {
 		t.Errorf("expected empty next string, got \"%s\"", next)
 	}
 }
-
-func Test_misc(t *testing.T) {
-	sentence1 := "What noise annoys a noisy oyster?"
-	sentence2 := "A noisy noise annoys a noisy oyster."
-
-	chain := NewChain(1)
-	chain.Build(strings.Fields(sentence1))
-	chain.Build(strings.Fields(sentence2))
-
-	for i := 0; i < 10; i++ {
-		generation := chain.GenerateBackward()
-		words := []string{}
-		next := generation.Next()
-		for next != "" {
-			words = append([]string{next}, words...)
-			next = generation.Next()
-		}
-
-		fmt.Println(strings.Join(words, " "))
-	}
-}
