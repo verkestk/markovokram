@@ -75,7 +75,7 @@ a noisy oyster.
 sentence1 := "What noise annoys a noisy oyster?"
 sentence2 := "A noisy noise annoys a noisy oyster."
 
-chain := NewChain(1)
+chain := markovokram.NewChain(1)
 chain.Build(strings.Fields(sentence1))
 chain.Build(strings.Fields(sentence2))
 
