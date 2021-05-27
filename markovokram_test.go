@@ -1,7 +1,6 @@
 package markovokram
 
 import (
-	"fmt"
 	"math/rand"
 	"reflect"
 	"strings"
@@ -18,7 +17,7 @@ func Test_chainPrefix_string(t *testing.T) {
 	expected := "what noise annoys"
 	actual := chainPrefix(prefix).string()
 	if expected != actual {
-		fmt.Println("prefix:", prefix)
+		t.Logf("prefix: %v\n", prefix)
 		t.Errorf("expected string() \"%s\", got \"%s\"", expected, actual)
 	}
 }
