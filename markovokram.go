@@ -132,3 +132,15 @@ func (g *Generation) Next() string {
 	g.prefix.shift(next)
 	return next
 }
+
+// NextWith Uses the specified token to shift tthe chain.
+func (g *Generation) NextWith(str string) {
+	g.prefix.shift(str)
+}
+
+// Options returns all of the possible next tokens.
+func (g *Generation) Options() []string {
+	options := make([]string, len(g.chainMap[g.prefix.string()]))
+	copy(options, g.chainMap[g.prefix.string()])
+	return options
+}

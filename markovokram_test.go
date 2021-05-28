@@ -139,8 +139,8 @@ func Test_Chain_GenerateBackwardFromPrefix(t *testing.T) {
 
 	generation = chain.GenerateBackwardFromPrefix([]string{"oyster.", "noisy"})
 	next = generation.Next()
-	if next != "a" {
-		t.Errorf("expected \"a\", got \"%s\"", next)
+	if next != "a" && next != "A" {
+		t.Errorf("expected \"a\" or \"A\", got \"%s\"", next)
 	}
 
 	generation = chain.GenerateBackwardFromPrefix([]string{})
@@ -166,5 +166,60 @@ func Test_Generation_Next(t *testing.T) {
 
 	if next != "" {
 		t.Errorf("expected empty next string, got \"%s\"", next)
+	}
+}
+
+func Test_Generation_NextWith(t *testing.T) {
+	sentence1 := "What noise annoys a noisy oyster?"
+	sentence2 := "A noisy noise annoys a noisy oyster."
+
+	// use a valid "next" value that
+	chain := NewChain(1)
+	chain.Build(strings.Fields(sentence1))
+	chain.Build(strings.Fields(sentence2))
+	generation := chain.GenerateForwardFromPrefix([]string{"What"})
+	generation.NextWith("noise")
+	next := generation.Next()
+	expected := "annoys"
+	if next != expected {
+		t.Errorf("expected next token \"%s\" - got \"%s\"", expected, next)
+	}
+
+	// use an invalid "next" value that should still work
+	// this should result in a generated sequence that couldn't have been
+	// generated "naturally"
+	generation = chain.GenerateForwardFromPrefix([]string{"What"})
+	generation.NextWith("noisy")
+	next = generation.Next()
+	if next != "oyster?" && next != "noise" && next != "oyster." {
+		t.Errorf("expected next token \"oyster?\" or \"noise\" or \"oyster.\" - got \"%s\"", next)
+	}
+
+	// use an invalid "next" value that should force the end of the sequence
+	generation = chain.GenerateForwardFromPrefix([]string{"What"})
+	generation.NextWith("impossible")
+	next = generation.Next()
+	if next != "" {
+		t.Errorf("expected empty next token - got \"%s\"", next)
+	}
+}
+
+func Test_Generation_Options(t *testing.T) {
+	sentence1 := "What noise annoys a noisy oyster?"
+	sentence2 := "A noisy noise annoys a noisy oyster."
+
+	chain := NewChain(1)
+	chain.Build(strings.Fields(sentence1))
+	chain.Build(strings.Fields(sentence2))
+	generation := chain.GenerateForwardFromPrefix([]string{"noisy"})
+	options := generation.Options()
+	expectedOptions := []string{"oyster?", "noise", "oyster."}
+	if len(options) != len(expectedOptions) {
+		t.Errorf("expected %d options = got %d", len(expectedOptions), len(options))
+	}
+	if !reflect.DeepEqual(expectedOptions, options) {
+		t.Logf("expected: %v", expectedOptions)
+		t.Logf("actual: %v", options)
+		t.Errorf("unexpected options")
 	}
 }
